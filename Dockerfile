@@ -9,7 +9,8 @@ FROM python:3-slim
 COPY --from=build /tmp/overviewer/dist/*.whl /tmp
 RUN pip install /tmp/*.whl
 ARG version=latest
-ADD https://overviewer.org/textures/${version}  ~/.minecraft/versions/${version}/${version}.jar
+ADD https://overviewer.org/textures/${version}  /ov/client.jar
+ADD config.py /ov/config
 
-VOLUME ["/mc/snapshot", "/srv/overviewer"]
-CMD ["overviewer.py", "/mc/snapshot", "/srv/overviewer"]
+VOLUME ["/mc/server.properties", "/mc/snapshot", "/srv/overviewer"]
+CMD ["overviewer.py", "--config=/ov/config"]
