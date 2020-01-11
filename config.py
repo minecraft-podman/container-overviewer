@@ -9,24 +9,32 @@ with open("/mc/server.properties") as f:
             k, v = line.split('=', 1)
             props[k.strip()] = v.strip()
 
-worlds["world"] = "/mc/snapshot"
+worlds["Overworld"] = "/mc/snapshot"
+worlds["Nether"] = "/mc/snapshot"
+worlds["End"] = "/mc/snapshot"
 
-renders["overworld"] = {
-    "world": "world",
-    "title": "Overworld",
+renders["overworld_day"] = {
+    "world": "Overworld",
+    "title": "Daytime",
     "rendermode": smooth_lighting,
 }
 
+renders['overworld_night'] = {
+    'world': 'Overworld',
+    'title': "Nighttime",
+    'rendermode': smooth_night,
+}
+
 renders["nether"] = {
-    "world": "world",
-    "title": "Nether",
+    "world": "Nether",
+    "title": "Nethertime",
     "rendermode": nether_smooth_lighting,
     "dimension": "nether",
 }
 
 renders["end"] = {
-    "world": "world",
-    "title": "End",
+    "world": "End",
+    "title": "Endtime",
     "rendermode": smooth_lighting,
     "dimension": "end",
 }
