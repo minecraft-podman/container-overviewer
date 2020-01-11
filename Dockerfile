@@ -6,7 +6,6 @@ WORKDIR /tmp/overviewer
 RUN xonsh build.xsh
 
 FROM python:3-slim
-ARG mcversion
 COPY --from=build /tmp/overviewer/dist/*.whl /tmp
 RUN pip install /tmp/*.whl
 ARG version=latest
