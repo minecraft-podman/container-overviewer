@@ -13,4 +13,4 @@ ADD https://overviewer.org/textures/${version}  /ov/client.jar
 ADD config.py /ov/config
 
 VOLUME ["/mc/server.properties", "/mc/snapshot", "/srv/overviewer"]
-CMD ["overviewer.py", "--config=/ov/config"]
+CMD ["nice", "overviewer.py", "--config=/ov/config"]
