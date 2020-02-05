@@ -12,5 +12,5 @@ ARG version=latest
 ADD https://overviewer.org/textures/${version}  /ov/client.jar
 ADD config.py /ov/config
 
-VOLUME ["/mc/server.properties", "/mc/snapshot", "/srv/overviewer"]
+VOLUME ["/mc/snapshot", "/srv/overviewer"]
 CMD ["nice", "overviewer.py", "--config=/ov/config"]
