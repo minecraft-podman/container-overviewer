@@ -1,0 +1,48 @@
+#!/usr/bin/env buildahscript-py
+#| arg: version = "latest"
+#| arg: configfile: pathlib.Path = None
+import pathlib
+import shutil
+import tempfile
+
+
+with tempfile.TemporaryDirectory() as buffer:
+    buffer = pathlib.Path(buffer)
+    with Container('xonsh/xonsh') as build:
+        build.run(['/usr/bin/xpip', 'install', 'wheel', 'numpy', 'pillow'])
+        build.run([
+            '/usr/bin/git', 'clone',
+            'https://github.com/astronouth7303/Minecraft-Overviewer.git',
+            '-b', 'update-setupy',
+            '/tmp/overviewer'
+        ])
+        build.workdir = '/tmp/overviewer'
+        build.copy_in('build.xsh', '/tmp/overviewer/build.xsh')
+        build.run(['/usr/bin/xonsh', 'build.xsh'])
+
+        with build.mount() as root:
+            for file in (root / "tmp" / "overviewer" / "dist").glob("*.whl"):
+                shutil.copy2(file, buffer)
+
+    with Container('python:3-slim') as cnt:
+        pkgs = []
+        for file in buffer.glob("*.whl"):
+            cnt.copy_in(file, f"/tmp/{file.name}")
+            pkgs.append(f"/tmp/{file.name}")
+        cnt.run(['pip', 'install', *pkgs])
+        cnt.add_url(f"https://overviewer.org/textures/{version}", "/ov/client.jar")
+
+        with cnt.mount() as root:
+            (root / "ov").mkdir()
+            with (root / "ov" / "config").open('wt') as dest:
+                with open("config.py", 'rt') as src:
+                    shutil.copyfileobj(src, dest)
+                print("", file=dest)
+                if configfile:
+                    with open(configfile, 'rt') as src:
+                        shutil.copyfileobj(src, dest)
+
+        cnt.volumes |= {"/mc/snapshot", "/srv/overviewer"}
+        cnt.command = ["nice", "overviewer.py", "--config=/ov/config"]
+
+        return cnt.commit()
